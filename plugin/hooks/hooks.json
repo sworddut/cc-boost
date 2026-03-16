@@ -1,0 +1,29 @@
+{
+  "description": "cc-boost output filter and scaffold interceptor hooks",
+  "hooks": {
+    "Setup": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$(cd \"$(dirname \"$0\")\" && pwd)\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/marketplaces/cc-boost/plugin\"; node \"$_R/scripts/smart-install.js\"",
+            "timeout": 300
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "_R=\"${CLAUDE_PLUGIN_ROOT}\"; [ -z \"$_R\" ] && _R=\"$(cd \"$(dirname \"$0\")\" && pwd)\"; [ -z \"$_R\" ] && _R=\"$HOME/.claude/plugins/marketplaces/cc-boost/plugin\"; node \"$_R/scripts/pre-tool-use.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

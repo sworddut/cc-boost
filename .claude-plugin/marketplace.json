@@ -1,0 +1,18 @@
+{
+  "name": "cc-boost",
+  "owner": {
+    "name": "cc-boost contributors"
+  },
+  "metadata": {
+    "description": "Token reduction plugin for Claude Code",
+    "homepage": "https://github.com/your-username/cc-boost"
+  },
+  "plugins": [
+    {
+      "name": "cc-boost",
+      "version": "0.1.0",
+      "source": "./plugin",
+      "description": "Open-source output filter: ANSI stripping, stack trace folding, scaffold interception"
+    }
+  ]
+}

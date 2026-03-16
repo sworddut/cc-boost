@@ -1,0 +1,72 @@
+import { registry } from '../registry.js';
+
+registry.register({
+  name: 'create-next-app',
+  displayName: 'Next.js',
+  patterns: [
+    /npx\s+create-next-app/,
+    /npm\s+create\s+next-app/,
+    /pnpm\s+create\s+next-app/,
+    /yarn\s+create\s+next-app/,
+  ],
+  answerFlags: [
+    '--typescript', '--no-typescript',
+    '--eslint', '--no-eslint',
+    '--tailwind', '--no-tailwind',
+    '--src-dir', '--no-src-dir',
+    '--app', '--no-app',
+    '--import-alias', '--no-import-alias',
+    '--yes', '-y',
+  ],
+  questions: [
+    {
+      id: 'typescript',
+      label: '是否使用 TypeScript？',
+      description: '推荐 Yes（类型安全，IDE 支持更好）',
+      default: true,
+      flagYes: '--typescript',
+      flagNo: '--no-typescript',
+    },
+    {
+      id: 'eslint',
+      label: '是否使用 ESLint？',
+      description: '推荐 Yes（代码质量检查）',
+      default: true,
+      flagYes: '--eslint',
+      flagNo: '--no-eslint',
+    },
+    {
+      id: 'tailwind',
+      label: '是否使用 Tailwind CSS？',
+      description: '默认 No',
+      default: false,
+      flagYes: '--tailwind',
+      flagNo: '--no-tailwind',
+    },
+    {
+      id: 'src_dir',
+      label: '是否使用 src/ 目录结构？',
+      description: '默认 No（Yes 时代码放在 src/ 下）',
+      default: false,
+      flagYes: '--src-dir',
+      flagNo: '--no-src-dir',
+    },
+    {
+      id: 'app_router',
+      label: '是否使用 App Router？',
+      description: '推荐 Yes（Next.js 13+ 新架构），No = Pages Router',
+      default: true,
+      flagYes: '--app',
+      flagNo: '--no-app',
+    },
+    {
+      id: 'import_alias',
+      label: '是否自定义 import alias（@/*）？',
+      description: '默认 No（保持 @/* 默认别名）',
+      default: false,
+      flagYes: '--import-alias "@/*"',
+      flagNo: '--no-import-alias',
+    },
+  ],
+  docsUrl: 'https://nextjs.org/docs/app/api-reference/cli/create-next-app',
+});

@@ -1,0 +1,11 @@
+{
+  "name": "cc-boost",
+  "version": "0.1.0",
+  "description": "Token reduction for Claude Code - ANSI stripping, stack trace folding, and interactive scaffold interception",
+  "author": {
+    "name": "cc-boost contributors"
+  },
+  "repository": "https://github.com/your-username/cc-boost",
+  "license": "MIT",
+  "keywords": ["token", "filter", "stack-trace", "scaffold", "hooks", "performance"]
+}

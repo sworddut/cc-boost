@@ -1,0 +1,13 @@
+{
+  "name": "cc-boost-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Runtime dependencies for cc-boost plugin",
+  "type": "commonjs",
+  "dependencies": {
+    "strip-ansi": "^7.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,23 @@
+# ── Dependencies ──────────────────────────────────────
+node_modules/
+
+# ── TypeScript compiler output (not used, we use esbuild) ──
+dist/
+*.tsbuildinfo
+
+# ── Source maps ───────────────────────────────────────
+*.js.map
+
+# ── macOS ─────────────────────────────────────────────
+.DS_Store
+**/.DS_Store
+
+# ── Runtime marker (created when plugin is installed) ─
+plugin/.install-version
+
+# ── Claude Code project state (local session data) ────
+.claude/
+
+# ── Reference material used during development ────────
+example/
+target.md
