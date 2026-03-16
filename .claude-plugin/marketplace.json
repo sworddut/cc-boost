@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Token reduction plugin for Claude Code",
-    "homepage": "https://github.com/your-username/cc-boost"
+    "homepage": "https://github.com/sworddut/cc-boost"
   },
   "plugins": [
     {

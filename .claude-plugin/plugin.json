@@ -5,7 +5,7 @@
   "author": {
     "name": "cc-boost contributors"
   },
-  "repository": "https://github.com/your-username/cc-boost",
+  "repository": "https://github.com/sworddut/cc-boost",
   "license": "MIT",
   "keywords": ["token", "filter", "stack-trace", "scaffold", "hooks", "performance"]
 }
