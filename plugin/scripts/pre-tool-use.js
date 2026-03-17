@@ -121,8 +121,8 @@ function blockWithReason(reason) {
   return {
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
-      permissionDecision: "block",
-      reason
+      permissionDecision: "deny",
+      permissionDecisionReason: reason
     }
   };
 }

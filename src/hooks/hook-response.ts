@@ -9,8 +9,8 @@ export interface AllowResponse {
 export interface BlockResponse {
   hookSpecificOutput: {
     hookEventName: 'PreToolUse';
-    permissionDecision: 'block';
-    reason: string;
+    permissionDecision: 'deny';
+    permissionDecisionReason: string;
   };
 }
 
@@ -33,8 +33,8 @@ export function blockWithReason(reason: string): BlockResponse {
   return {
     hookSpecificOutput: {
       hookEventName: 'PreToolUse',
-      permissionDecision: 'block',
-      reason,
+      permissionDecision: 'deny',
+      permissionDecisionReason: reason,
     },
   };
 }
