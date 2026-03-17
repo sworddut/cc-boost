@@ -1,77 +1,87 @@
 #!/usr/bin/env node
-/**
- * smart-install.js — Run at SessionStart (Setup hook).
- *
- * Ensures plugin dependencies are installed. Uses a version marker
- * file to skip installation when already up-to-date.
- *
- * Outputs only to stderr (progress/errors) and outputs valid JSON to
- * stdout for the Claude Code hook contract.
- */
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { execSync } from 'child_process';
-import { join, dirname } from 'path';
-import { homedir } from 'os';
-import { fileURLToPath } from 'url';
+const __importMetaUrl = require("url").pathToFileURL(__filename).href;
+"use strict";
 
-// Resolve plugin root (handle missing CLAUDE_PLUGIN_ROOT on Linux/Stop hooks)
-function resolveRoot() {
+// src/hooks/smart-install.ts
+var import_fs2 = require("fs");
+var import_child_process = require("child_process");
+var import_path2 = require("path");
+
+// src/shared/paths.ts
+var import_fs = require("fs");
+var import_path = require("path");
+var import_os = require("os");
+var import_url = require("url");
+function resolvePluginRoot(callerFilename) {
   if (process.env.CLAUDE_PLUGIN_ROOT) {
     const r = process.env.CLAUDE_PLUGIN_ROOT;
-    if (existsSync(join(r, 'package.json'))) return r;
+    if ((0, import_fs.existsSync)((0, import_path.join)(r, "package.json"))) return r;
   }
-  try {
-    const scriptDir = dirname(fileURLToPath(import.meta.url));
-    const candidate = join(scriptDir, '..');
-    if (existsSync(join(candidate, 'package.json'))) return candidate;
-  } catch { /* ignore */ }
-  const legacy = join(homedir(), '.claude', 'plugins', 'marketplaces', 'cc-boost', 'plugin');
-  return legacy;
+  if (callerFilename) {
+    try {
+      const scriptDir = (0, import_path.dirname)(
+        callerFilename.startsWith("file:") ? (0, import_url.fileURLToPath)(callerFilename) : callerFilename
+      );
+      const candidate = (0, import_path.resolve)(scriptDir, "..");
+      if ((0, import_fs.existsSync)((0, import_path.join)(candidate, "package.json"))) return candidate;
+    } catch {
+    }
+  }
+  const xdg = (0, import_path.join)((0, import_os.homedir)(), ".config", "claude", "plugins", "marketplaces", "cc-boost", "plugin");
+  if ((0, import_fs.existsSync)((0, import_path.join)(xdg, "package.json"))) return xdg;
+  return (0, import_path.join)((0, import_os.homedir)(), ".claude", "plugins", "marketplaces", "cc-boost", "plugin");
+}
+function getClaudeConfigDir() {
+  return process.env.CLAUDE_CONFIG_DIR ?? (0, import_path.join)((0, import_os.homedir)(), ".claude");
+}
+function getClaudeSettingsPath() {
+  return (0, import_path.join)(getClaudeConfigDir(), "settings.json");
 }
 
-// Check if plugin is disabled in Claude Code settings
+// src/hooks/smart-install.ts
 function isDisabled() {
   try {
-    const configDir = process.env.CLAUDE_CONFIG_DIR || join(homedir(), '.claude');
-    const settingsPath = join(configDir, 'settings.json');
-    if (!existsSync(settingsPath)) return false;
-    const settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
-    return settings?.enabledPlugins?.['cc-boost'] === false;
-  } catch { return false; }
+    const settingsPath = getClaudeSettingsPath();
+    if (!(0, import_fs2.existsSync)(settingsPath)) return false;
+    const settings = JSON.parse((0, import_fs2.readFileSync)(settingsPath, "utf-8"));
+    return settings?.enabledPlugins?.["cc-boost"] === false;
+  } catch {
+    return false;
+  }
 }
-
 if (isDisabled()) {
-  console.log(JSON.stringify({ continue: true, suppressOutput: true }));
+  process.stdout.write(JSON.stringify({ continue: true, suppressOutput: true }) + "\n");
   process.exit(0);
 }
-
-const ROOT = resolveRoot();
-const MARKER = join(ROOT, '.install-version');
-
+var ROOT = resolvePluginRoot(__importMetaUrl);
+var MARKER = (0, import_path2.join)(ROOT, ".install-version");
 function needsInstall() {
-  if (!existsSync(join(ROOT, 'node_modules'))) return true;
+  if (!(0, import_fs2.existsSync)((0, import_path2.join)(ROOT, "node_modules"))) return true;
   try {
-    const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf-8'));
-    const marker = JSON.parse(readFileSync(MARKER, 'utf-8'));
+    const pkg = JSON.parse((0, import_fs2.readFileSync)((0, import_path2.join)(ROOT, "package.json"), "utf-8"));
+    const marker = JSON.parse((0, import_fs2.readFileSync)(MARKER, "utf-8"));
     return pkg.version !== marker.version;
-  } catch { return true; }
+  } catch {
+    return true;
+  }
 }
-
 try {
   if (needsInstall()) {
-    console.error('[cc-boost] Installing dependencies...');
-    execSync('npm install --production', {
+    process.stderr.write("[cc-boost] Installing dependencies...\n");
+    (0, import_child_process.execSync)("npm install --production", {
       cwd: ROOT,
-      stdio: ['pipe', 'pipe', 'inherit'],
+      stdio: ["pipe", "pipe", "inherit"]
     });
-    const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf-8'));
-    writeFileSync(MARKER, JSON.stringify({ version: pkg.version, installedAt: new Date().toISOString() }));
-    console.error(`[cc-boost] Dependencies installed (v${pkg.version})`);
+    const pkg = JSON.parse((0, import_fs2.readFileSync)((0, import_path2.join)(ROOT, "package.json"), "utf-8"));
+    (0, import_fs2.writeFileSync)(MARKER, JSON.stringify({ version: pkg.version, installedAt: (/* @__PURE__ */ new Date()).toISOString() }));
+    process.stderr.write(`[cc-boost] Dependencies installed (v${pkg.version})
+`);
   }
-  console.log(JSON.stringify({ continue: true, suppressOutput: true }));
+  process.stdout.write(JSON.stringify({ continue: true, suppressOutput: true }) + "\n");
 } catch (e) {
-  console.error('[cc-boost] Install failed:', e.message);
-  // Still output valid JSON — don't block the user
-  console.log(JSON.stringify({ continue: true, suppressOutput: true }));
+  const msg = e instanceof Error ? e.message : String(e);
+  process.stderr.write(`[cc-boost] Install failed: ${msg}
+`);
+  process.stdout.write(JSON.stringify({ continue: true, suppressOutput: true }) + "\n");
   process.exit(0);
 }

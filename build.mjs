@@ -27,25 +27,32 @@ const shared = {
   packages: 'bundle',
 };
 
+// Banner/define used for any CJS bundle that calls resolvePluginRoot(import.meta.url)
+const cjsImportMetaBanner = {
+  banner: { js: 'const __importMetaUrl = require("url").pathToFileURL(__filename).href;' },
+  define: { 'import.meta.url': '__importMetaUrl' },
+};
+
 async function run() {
   // 1. PreToolUse hook — the script Claude Code calls before each Bash tool use
   await build({
     ...shared,
+    ...cjsImportMetaBanner,
     entryPoints: ['src/hooks/pre-tool-use.ts'],
     outfile: join(outDir, 'pre-tool-use.js'),
     format: 'cjs',
-    // esbuild leaves import.meta.url as an empty object in CJS output.
-    // Inject a banner that defines __importMetaUrl from CJS __filename,
-    // then map import.meta.url to that identifier so resolvePluginRoot() works.
-    banner: {
-      js: 'const __importMetaUrl = require("url").pathToFileURL(__filename).href;',
-    },
-    define: {
-      'import.meta.url': '__importMetaUrl',
-    },
   });
 
-  // 2. Filter pipeline — runs as a shell pipe: cmd 2>&1 | node filter.cjs
+  // 2. Setup hook — installs plugin deps on session start
+  await build({
+    ...shared,
+    ...cjsImportMetaBanner,
+    entryPoints: ['src/hooks/smart-install.ts'],
+    outfile: join(outDir, 'smart-install.js'),
+    format: 'cjs',
+  });
+
+  // 3. Filter pipeline — runs as a shell pipe: cmd 2>&1 | node filter.cjs
   await build({
     ...shared,
     entryPoints: ['src/filter-main.ts'],
@@ -54,7 +61,7 @@ async function run() {
   });
 
   const sizes = await Promise.all(
-    ['pre-tool-use.js', 'filter.cjs'].map(async (f) => {
+    ['pre-tool-use.js', 'smart-install.js', 'filter.cjs'].map(async (f) => {
       const { statSync } = await import('fs');
       const size = statSync(join(outDir, f)).size;
       return `  ${f}: ${(size / 1024).toFixed(1)}KB`;
